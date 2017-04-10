@@ -8,6 +8,8 @@ relative strength using tournament.py and include the results in your report.
 """
 import random
 
+import math
+
 
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
@@ -38,7 +40,18 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
-    raise NotImplementedError
+
+
+    # TODO using impeoved score function for now
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves)
 
 
 class CustomPlayer:
@@ -124,19 +137,61 @@ class CustomPlayer:
         # move from the game board (i.e., an opening book), or returning
         # immediately if there are no legal moves
 
+        # Immediate returns
+        # moves_available = game.get_legal_moves(self)
+        moves_available = legal_moves
+        if moves_available == 0:
+            return -1, -1
+        elif moves_available == 1:
+            return moves_available[0]
+
+        # Initial move (try center of the board)
+        if game.get_player_location(self) is None:
+            x = int(math.floor(game.width / 2))
+            y = int(math.floor(game.height / 2))
+            if game.move_is_legal((x, y)):
+                return (x, y)
+            elif game.move_is_legal((x - 1, y)):
+                return (x - 1, y)
+            elif game.move_is_legal((x, y - 1)):
+                return (x, y - 1)
+            elif game.move_is_legal((x + 1, y)):
+                return (x + 1, y)
+            elif game.move_is_legal((x, y + 1)):
+                return (x, y + 1)
+
+        # Init variables
+        if self.method == 'minimax':
+            current_method = self.minimax
+        else:
+            current_method = self.alphabeta
+
+        current_solution = moves_available[0]
+        current_score = float('-inf')
+
         try:
             # The search method call (alpha beta or minimax) should happen in
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
-            pass
+
+            if self.iterative:
+                current_depth = 0
+                while True:
+                    new_score, new_solution = current_method(game, current_depth, maximizing_player=True)
+                    current_score = new_score
+                    current_solution = new_solution
+                    current_depth += 1
+            else:
+                new_score, new_solution = current_method(game, self.search_depth, maximizing_player=True)
+                return new_solution
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
-            pass
+            return current_solution
 
         # Return the best move from the last completed search iteration
-        raise NotImplementedError
+        return current_solution
 
     def minimax(self, game, depth, maximizing_player=True):
         """Implement the minimax search algorithm as described in the lectures.
@@ -173,7 +228,27 @@ class CustomPlayer:
             raise Timeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+
+        # Immediate returns
+        if depth == 0:
+            return self.score(game, self), game.get_player_location(self)
+
+        current_solution = None
+        current_score = float('-inf') if maximizing_player else float('inf')
+
+        moves_available = game.get_legal_moves(self) if maximizing_player else game.get_legal_moves(
+            game.get_opponent(self))
+        for m in moves_available:
+            new_board = game.forecast_move(m)
+            new_score, new_solution = self.minimax(new_board, depth - 1, maximizing_player=not maximizing_player)
+            if maximizing_player and new_score > current_score:
+                current_score = new_score
+                current_solution = m
+            elif not maximizing_player and new_score < current_score:
+                current_score = new_score
+                current_solution = m
+
+        return current_score, current_solution
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
@@ -213,8 +288,34 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise Timeout()
+        # if self.time_left() < self.TIMER_THRESHOLD:
+        #     raise Timeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+        # Immediate returns
+        if depth == 0:
+            return self.score(game, self), game.get_player_location(self)
+
+        current_solution = None
+        current_score = float('-inf') if maximizing_player else float('inf')
+
+        moves_available = game.get_legal_moves(self) if maximizing_player else game.get_legal_moves(
+            game.get_opponent(self))
+        for m in moves_available:
+            new_board = game.forecast_move(m)
+            new_score, new_solution = self.alphabeta(new_board, depth - 1,
+                                                     alpha=max(alpha, current_score) if maximizing_player else alpha,
+                                                     beta=beta if maximizing_player else min(beta, current_score),
+                                                     maximizing_player=not maximizing_player)
+            if maximizing_player and new_score > current_score:
+                current_score = new_score
+                current_solution = m
+                if current_score >= beta:
+                    break
+            elif not maximizing_player and new_score < current_score:
+                current_score = new_score
+                current_solution = m
+                if current_score <= alpha:
+                    break
+
+        return current_score, current_solution
