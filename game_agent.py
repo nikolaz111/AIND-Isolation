@@ -11,7 +11,10 @@ class SearchTimeout(Exception):
 
 
 def custom_score(game, player):
-    """Calculate the heuristic value of a game state from the point of view
+    """Uses the improve score heuristic but also gives points for positions in the board
+    where the opponent player is less than 2 squares away from the border.
+
+    Calculate the heuristic value of a game state from the point of view
     of the given player.
 
     This should be the best heuristic function for your project submission.
@@ -34,12 +37,38 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(player)
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total_player = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    location = game.get_player_location(game.get_opponent(player))
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total_opponent = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves + total_opponent - total_player)
 
 
 def custom_score_2(game, player):
-    """Calculate the heuristic value of a game state from the point of view
+    """Uses the improve score heuristic but also gives points for positions in the board
+    where the opponent player is less than 2 squares away from the border.
+
+    Calculate the heuristic value of a game state from the point of view
     of the given player.
 
     Note: this function should be called from within a Player instance as
@@ -60,12 +89,30 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(game.get_opponent(player))
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves + total)
 
 
 def custom_score_3(game, player):
-    """Calculate the heuristic value of a game state from the point of view
+    """Uses the improve score heuristic but also penalises positions in the board
+    where the player is less than 2 squares away from the border.
+
+    Calculate the heuristic value of a game state from the point of view
     of the given player.
 
     Note: this function should be called from within a Player instance as
@@ -86,8 +133,23 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(player)
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves - total)
 
 
 class IsolationPlayer:
@@ -212,8 +274,67 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        current_solution = None
+        current_score = float('-inf')
+        moves_available = game.get_legal_moves(self)
+        for m in moves_available:
+            new_board = game.forecast_move(m)
+            new_solution = self.min_value(new_board, depth - 1)
+            new_score = self.score(new_solution)
+
+            if max(current_score, new_score) == new_score:
+                current_score = new_score
+                current_solution = new_solution
+
+        return current_score, current_solution
+
+    def max_value(self, game, depth):
+        # Immediate returns
+        if self.terminal_test(depth):
+            return game.get_player_location(self)
+
+        current_solution = None
+        current_score = float('-inf')
+        moves_available = game.get_legal_moves(self)
+
+        for m in moves_available:
+            new_board = game.forecast_move(m)
+            new_solution = self.min_value(new_board, depth - 1)
+            new_score = self.score(new_solution)
+
+            if max(current_score, new_score) == new_score:
+                current_score = new_score
+                current_solution = new_solution
+
+        return current_solution
+
+    def min_value(self, game, depth):
+        # Immediate returns
+        if self.terminal_test(depth):
+            return game.get_player_location(self)
+
+        current_solution = None
+        current_score = float('inf')
+        moves_available = game.get_legal_moves(self)
+
+        for m in moves_available:
+            new_board = game.forecast_move(m)
+            new_solution = self.max_value(new_board, depth - 1)
+            new_score = self.score(new_solution)
+
+            if min(current_score, new_score) == new_score:
+                current_score = new_score
+                current_solution = new_solution
+
+        return current_solution
+
+    def terminal_test(self, depth):
+        if depth == 0:
+            return True
+        else:
+            return False
+
+
 
 
 class AlphaBetaPlayer(IsolationPlayer):
