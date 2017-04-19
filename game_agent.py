@@ -16,6 +16,131 @@ class Timeout(Exception):
     pass
 
 
+def heuristic3(game, player):
+    """Uses the improve score heuristic but also gives points for positions in the board
+    where the opponent player is less than 2 squares away from the border.
+
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(player)
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total_player = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    location = game.get_player_location(game.get_opponent(player))
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total_opponent = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves + total_opponent - total_player)
+
+
+def heuristic2(game, player):
+    """Uses the improve score heuristic but also gives points for positions in the board
+    where the opponent player is less than 2 squares away from the border.
+
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(game.get_opponent(player))
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves + total)
+
+
+def heuristic1(game, player):
+    """Uses the improve score heuristic but also penalises positions in the board
+    where the player is less than 2 squares away from the border.
+
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    location = game.get_player_location(player)
+    borderx1_distance = min(max(2 - location[0], 0), 2)
+    borderx2_distance = min(max(3 + location[0] - game.width, 0), 2)
+    bordery1_distance = min(max(2 - location[1], 0), 2)
+    bordery2_distance = min(max(3 + location[1] - game.height, 0), 2)
+
+    total = borderx1_distance + borderx2_distance + bordery1_distance + bordery2_distance
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves - total)
+
+
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -39,19 +164,7 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    # TODO: finish this function!
-
-
-    # TODO using impeoved score function for now
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    return float(own_moves - opp_moves)
+    return heuristic3(game, player)
 
 
 class CustomPlayer:
@@ -288,8 +401,8 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        # if self.time_left() < self.TIMER_THRESHOLD:
-        #     raise Timeout()
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise Timeout()
 
         # TODO: finish this function!
         # Immediate returns

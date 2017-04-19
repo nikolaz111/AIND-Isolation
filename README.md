@@ -111,3 +111,136 @@ Your project is ready for submission when it meets all requirements of the proje
 
 The `isoviz` folder contains a modified version of chessboard.js that can animate games played on a 7x7 board.  In order to use the board, you must run a local webserver by running `python -m SimpleHTTPServer 8000` from your project directory (you can replace 8000 with another port number if that one is unavailable), then open your browser to `http://localhost:8000` and navigate to the `/isoviz/display.html` page.  Enter the move history of an isolation match (i.e., the array returned by the Board.play() method) into the text area and run the match.  Refresh the page to run a different game.
 
+
+
+
+
+
+
+## Results
+
+### Heuristic 1
+```
+*************************
+ Evaluating: ID_Improved 
+*************************
+
+Playing Matches:
+----------
+  Match 1: ID_Improved vs   Random    	Result: 16 to 4
+  Match 2: ID_Improved vs   MM_Null   	Result: 18 to 2
+  Match 3: ID_Improved vs   MM_Open   	Result: 13 to 7
+  Match 4: ID_Improved vs MM_Improved 	Result: 11 to 9
+  Match 5: ID_Improved vs   AB_Null   	Result: 13 to 7
+  Match 6: ID_Improved vs   AB_Open   	Result: 12 to 8
+  Match 7: ID_Improved vs AB_Improved 	Result: 7 to 13
+
+
+Results:
+----------
+ID_Improved         64.29%
+
+*************************
+   Evaluating: Student   
+*************************
+
+Playing Matches:
+----------
+  Match 1:   Student   vs   Random    	Result: 17 to 3
+  Match 2:   Student   vs   MM_Null   	Result: 15 to 5
+  Match 3:   Student   vs   MM_Open   	Result: 12 to 8
+  Match 4:   Student   vs MM_Improved 	Result: 12 to 8
+  Match 5:   Student   vs   AB_Null   	Result: 15 to 5
+  Match 6:   Student   vs   AB_Open   	Result: 15 to 5
+  Match 7:   Student   vs AB_Improved 	Result: 12 to 8
+
+
+Results:
+----------
+Student             70.00%
+```
+
+
+
+### Heuristic 2
+```
+*************************
+ Evaluating: ID_Improved 
+*************************
+
+Playing Matches:
+----------
+  Match 1: ID_Improved vs   Random    	Result: 15 to 5
+  Match 2: ID_Improved vs   MM_Null   	Result: 14 to 6
+  Match 3: ID_Improved vs   MM_Open   	Result: 11 to 9
+  Match 4: ID_Improved vs MM_Improved 	Result: 13 to 7
+  Match 5: ID_Improved vs   AB_Null   	Result: 14 to 6
+  Match 6: ID_Improved vs   AB_Open   	Result: 11 to 9
+  Match 7: ID_Improved vs AB_Improved 	Result: 12 to 8
+
+
+Results:
+----------
+ID_Improved         64.29%
+
+*************************
+   Evaluating: Student   
+*************************
+
+Playing Matches:
+----------
+  Match 1:   Student   vs   Random    	Result: 13 to 7
+  Match 2:   Student   vs   MM_Null   	Result: 19 to 1
+  Match 3:   Student   vs   MM_Open   	Result: 12 to 8
+  Match 4:   Student   vs MM_Improved 	Result: 11 to 9
+  Match 5:   Student   vs   AB_Null   	Result: 16 to 4
+  Match 6:   Student   vs   AB_Open   	Result: 14 to 6
+  Match 7:   Student   vs AB_Improved 	Result: 10 to 10
+
+
+Results:
+----------
+Student             67.86%
+```
+
+
+### Heuristic 3
+```
+*************************
+ Evaluating: ID_Improved 
+*************************
+
+Playing Matches:
+----------
+  Match 1: ID_Improved vs   Random    	Result: 18 to 2
+  Match 2: ID_Improved vs   MM_Null   	Result: 17 to 3
+  Match 3: ID_Improved vs   MM_Open   	Result: 14 to 6
+  Match 4: ID_Improved vs MM_Improved 	Result: 15 to 5
+  Match 5: ID_Improved vs   AB_Null   	Result: 15 to 5
+  Match 6: ID_Improved vs   AB_Open   	Result: 13 to 7
+  Match 7: ID_Improved vs AB_Improved 	Result: 14 to 6
+
+
+Results:
+----------
+ID_Improved         75.71%
+
+*************************
+   Evaluating: Student   
+*************************
+
+Playing Matches:
+----------
+  Match 1:   Student   vs   Random    	Result: 15 to 5
+  Match 2:   Student   vs   MM_Null   	Result: 16 to 4
+  Match 3:   Student   vs   MM_Open   	Result: 15 to 5
+  Match 4:   Student   vs MM_Improved 	Result: 13 to 7
+  Match 5:   Student   vs   AB_Null   	Result: 14 to 6
+  Match 6:   Student   vs   AB_Open   	Result: 14 to 6
+  Match 7:   Student   vs AB_Improved 	Result: 12 to 8
+
+
+Results:
+----------
+Student             70.71%
+```
