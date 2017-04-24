@@ -538,4 +538,7 @@ recommendations would be to use the heuristic 3. The reasons for this are:
  show there is not a big difference between the results of the improved score heuristic.
  * All the test for the third heuristic yielded a win  average above 70%, compared to the results for all other 
  heuristics, this one had a better performance
- * Specially on the last t
+ * If we look at the results of ID_Improved for the third heuristic, we see better results compared to the previous two
+ heuristics, but still the last heuristic produces better results overall.
+ 
+Because of this results, we should choose heuristic 3 over the other heuristics.
