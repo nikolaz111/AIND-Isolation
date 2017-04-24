@@ -121,6 +121,12 @@ The `isoviz` folder contains a modified version of chessboard.js that can animat
 
 ### Heuristic 1
 
+The first heuristic uses the improved score heuristic but also penalises positions in the board where the player is less 
+than 2 squares away from the border. As the movements allowed by the game are L shaped knight movements, the player
+that gets closer to the border will have less available movements. As the farthest a player can move through an axis 
+with this kind of movement is 2 squares, then the heuristic will reduce the score of a play if the player gets close to
+the border.
+
 Attempt 1
 
 ```
@@ -251,6 +257,11 @@ Student             67.14%
 
 ### Heuristic 2
 
+The second heuristic uses the improved score heuristic but also gives points for positions in the board where the 
+opponent player is less than 2 squares away from the border. Here we use the same logic of being close to the border as
+a bad thing because of the limitations of the L shaped movement, but this time we give points to branches that could
+lead to the opponent being close to the border.
+
 Attempt 1
 
 ```
@@ -379,6 +390,9 @@ Student             67.86%
 
 ### Heuristic 3
 
+The last heuristic is a combination of the two previous heuristics. Uses the improved score heuristic along with the 
+points given and taken away depending on how close to the border is the the player and the opponent player.
+
 Attempt 1
 
 ```
@@ -504,3 +518,24 @@ Results:
 ----------
 Student             75.00%
 ```
+
+### Conclusions
+
+The table below shows a summary of the results produced by the three heuristics.
+
+![Heuristic comparison](heuristics_comparison.png)
+
+As we can see in the results, all of the heuristics performed better than the ID_Improved heuristic although they rely
+heavily in the improved score heuristic. The additional computations made on each of the heuristics do not represent a
+lot of work to be made by the agent, so they don't add a burden to the calculation of the heuristic.
+
+As the three heuristics are based on the improved score heuristic, we see that the results are not that different from
+the improved score heuristic tests, but we can see that overall an improvement exists over the base heuristic. We see
+that in average the last heuristic performed better than the others, including the improved score heuristic so the
+recommendations would be to use the heuristic 3. The reasons for this are:
+
+ * First of all, it is based on a already good heuristic that compares the available moves by the player. The results
+ show there is not a big difference between the results of the improved score heuristic.
+ * All the test for the third heuristic yielded a win  average above 70%, compared to the results for all other 
+ heuristics, this one had a better performance
+ * Specially on the last t
